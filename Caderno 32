@@ -1,0 +1,751 @@
+import React, { useState } from 'react';
+
+// Main content data for each topic, extracted from the PDF pages up to 109.
+// Each topic now includes more detailed content, a 'page' property for PDF reference, and a 'fullSnippet'.
+const topicsData = {
+  'introducao': {
+    title: '1. Introdução',
+    page: '16-22',
+    fullSnippet: 'Apesar da redução importante da mortalidade infantil no Brasil nas últimas décadas, os indicadores de óbitos neonatais apresentaram uma velocidade de queda aquém do desejado. Um número expressivo de mortes ainda faz parte da realidade social e sanitária de nosso País. Tais mortes ainda ocorrem por causas evitáveis, principalmente no que diz respeito às ações dos serviços de saúde e, entre elas, a atenção pré-natal, ao parto e ao recém-nascido.',
+    content: `
+      <p className="text-lg font-semibold mb-2">MINISTÉRIO DA SAÚDE</p>
+      <p className="mb-4">O Brasil tem registrado uma significativa redução na mortalidade materna desde 1990, quando a razão de mortalidade materna (RMM) corrigida era de 140 óbitos por 100 mil nascidos vivos (NV). Em 2007, esse número declinou para 75 óbitos por 100 mil NV, representando uma diminuição de aproximadamente metade. A melhoria na investigação de óbitos de mulheres em idade fértil contribuiu para essa estabilidade.</p>
+      <p className="mb-4">Para atingir a meta do quinto Objetivo de Desenvolvimento do Milênio (ODM), o Brasil deve alcançar uma RMM igual ou inferior a 35 óbitos por 100 mil NV até 2015, o que corresponde a uma redução de três quartos em relação a 1990. A queda se deve principalmente à redução da mortalidade por causas obstétricas diretas, embora as mortes por causas indiretas tenham aumentado, refletindo melhor investigação.</p>
+      <p className="mb-4">No contexto atual, o Ministério da Saúde institui a <strong className="text-pink-600">Rede Alyne</strong>, um conjunto de iniciativas que visam qualificar as Redes de Atenção Materno-Infantil e reduzir a morbimortalidade. Os princípios da Rede Alyne incluem a humanização do parto, a organização dos serviços de saúde em rede, o acolhimento com classificação de risco, a vinculação da gestante à maternidade (evitando que a gestante peregrine), e a realização de exames de rotina em tempo oportuno.</p>
+      <p>Este Caderno de Atenção Básica (CAB) Pré-Natal, número 32, apoia as equipes de atenção básica (EAB) na qualificação do cuidado e na articulação em rede. Ele aborda desde a organização do processo de trabalho e planejamento, até o acompanhamento da gravidez de risco habitual, suas possíveis intercorrências, promoção da saúde, gestação em situações especiais, assistência ao parto e questões legais relacionadas.</p>
+    `,
+  },
+  'avaliacao-pre-concepcional': {
+    title: '2. Avaliação Pré-Concepcional',
+    page: '27-30',
+    fullSnippet: 'Entende-se por avaliação pré-concepcional a consulta que o casal faz antes de uma gravidez, objetivando identificar fatores de risco ou doenças que possam alterar a evolução normal de uma futura gestação. Constitui, assim, instrumento importante na melhoria dos índices de morbidade e mortalidade materna e infantil.',
+    content: `
+      <p className="text-lg font-semibold mb-2">Entende-se por avaliação pré-concepcional a consulta que o casal faz antes de uma gravidez, com o objetivo de identificar fatores de risco ou doenças que possam alterar a evolução normal de uma futura gestação. Constitui um instrumento fundamental na melhoria dos índices de morbidade e mortalidade materna e infantil.</p>
+      <p className="mb-4">Sabe-se que grande parte das gestações não é planejada. Por isso, a implementação da atenção em <strong className="text-pink-600">planejamento familiar</strong> é crucial, incentivando a dupla proteção (prevenção de gravidez e DSTs, incluindo HIV e sífilis).</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Atividades desenvolvidas na avaliação pré-concepcional:</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li><strong className="text-pink-600">Anamnese e exame físico:</strong> inclui exame ginecológico, investigação de problemas de saúde atuais e prévios, e história obstétrica.</li>
+        <li><strong className="text-pink-600">Exames laboratoriais:</strong> essenciais para uma avaliação completa.</li>
+        <li><strong className="text-pink-600">Identificação de situações de saúde:</strong> como diabetes pré-gestacional, hipertensão, cardiopatias, distúrbios da tireoide e processos infecciosos (DSTs).</li>
+        <li><strong className="text-pink-600">Avaliação de hábitos:</strong> uso de medicamentos, tabagismo, álcool e drogas ilícitas, com orientação sobre seus efeitos adversos.</li>
+        <li><strong className="text-pink-600">História familiar:</strong> destaque para doenças hereditárias, pré-eclampsia, hipertensão e diabetes.</li>
+        <li><strong className="text-pink-600">Orientações específicas:</strong> nutrição adequada, riscos do tabagismo/álcool, avaliação de condições de trabalho (exposição a tóxicos ambientais).</li>
+        <li><strong className="text-pink-600">Suplementação:</strong> Administração preventiva de ácido fólico (5mg, VO/dia, 60 a 90 dias antes da concepção) para prevenção de anormalidades do tubo neural.</li>
+        <li><strong className="text-pink-600">Prevenção e ações contra infecções:</strong> investigação de Rubéola e Hepatite B (com imunização se negativo), Toxoplasmose (teste no pré-natal), HIV/Aids (teste e aconselhamento), Sífilis (tratamento para gestante e parceiros).</li>
+        <li><strong className="text-pink-600">Eficácia em doenças crônicas:</strong> A avaliação pré-concepcional é altamente eficaz para diabetes mellitus (controle da glicemia), hipertensão arterial crônica (adequação de drogas), epilepsia (monoterapia e ácido fólico), infecções por hepatite B ou C, e HIV.</li>
+      </ul>
+    `,
+  },
+  'importancia-pre-natal': {
+    title: '3. A Importância da Assistência ao Pré-Natal',
+    page: '33-34',
+    fullSnippet: 'O objetivo do acompanhamento pré-natal é assegurar o desenvolvimento da gestação, permitindo o parto de um recém-nascido saudável, sem impacto para a saúde materna, inclusive abordando aspectos psicossociais e as atividades educativas e preventivas.',
+    content: `
+      <p className="text-lg font-semibold mb-2">O objetivo do acompanhamento pré-natal é assegurar o desenvolvimento da gestação, permitindo o parto de um recém-nascido saudável, sem impacto para a saúde materna, inclusive abordando aspectos psicossociais e as atividades educativas e preventivas.</p>
+      <p className="mb-4">O acesso à assistência pré-natal, especialmente o início precoce no primeiro trimestre, é considerado o principal indicador do prognóstico ao nascimento e da qualidade dos cuidados maternos.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Calendário de Consultas (ideal):</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li><strong className="text-pink-600">Mensais:</strong> até a 28ª semana de gestação.</li>
+        <li><strong className="text-pink-600">Quinzenais:</strong> entre 28 e 36 semanas.</li>
+        <li><strong className="text-pink-600">Semanais:</strong> no termo (a partir da 36ª semana).</li>
+      </ul>
+      <p className="mb-4">É importante ressaltar que não existe "alta" do pré-natal antes do parto. A maior frequência de visitas no final da gestação visa à avaliação do risco perinatal e das intercorrências clínico-obstétricas mais comuns nesse trimestre.</p>
+      <p>Quando o parto não ocorre até a 41ª semana, é necessário encaminhar a gestante para a avaliação do bem-estar fetal, incluindo avaliação do índice do líquido amniótico e monitoramento cardíaco fetal. Estudos clínicos randomizados demonstram que induzir o trabalho de parto em todas as gestantes com 41 semanas é preferível à avaliação seriada do bem-estar fetal, pois se observou menor risco de morte neonatal e perinatal e menor chance de cesariana.</p>
+    `,
+  },
+  'organizacao-servicos': {
+    title: '4. Organização dos Serviços, Planejamento e Programação',
+    page: '37-50',
+    fullSnippet: 'A unidade básica de saúde (UBS) deve ser a porta de entrada preferencial da gestante no sistema de saúde. É o ponto de atenção estratégico para melhor acolher suas necessidades, inclusive proporcionando um acompanhamento longitudinal e continuado, principalmente durante a gravidez.',
+    content: `
+      <p className="text-lg font-semibold mb-2">A unidade básica de saúde (UBS) deve ser a porta de entrada preferencial da gestante no sistema de saúde. É o ponto de atenção estratégico para melhor acolher suas necessidades, inclusive proporcionando um acompanhamento longitudinal e continuado, principalmente durante a gravidez.</p>
+      <p className="mb-4">A organização das ações de saúde na Atenção Básica é orientada pela <strong className="text-pink-600">integralidade do cuidado</strong>, buscando integrar o trabalho das equipes da UBS com outros serviços de saúde. A integralidade implica integrar trabalhos disciplinares, demanda espontânea e programada, e ações de caráter individual e coletivo, além de ser um espaço de articulação social.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">10 Passos para o Pré-Natal de Qualidade na Atenção Básica:</h3>
+      <ol className="list-decimal list-inside mb-4">
+        <li><strong className="text-pink-600">Iniciar o pré-natal:</strong> na Atenção Primária à Saúde até a 12ª semana de gestação (captação precoce).</li>
+        <li><strong className="text-pink-600">Garantir recursos:</strong> humanos, físicos, materiais e técnicos necessários à atenção pré-natal.</li>
+        <li><strong className="text-pink-600">Assegurar exames:</strong> toda gestante deve ter assegurado a solicitação, realização e avaliação em tempo oportuno do resultado dos exames preconizados.</li>
+        <li><strong className="text-pink-600">Promover escuta ativa:</strong> da gestante e de seus(suas) acompanhantes, considerando aspectos intelectuais, emocionais, sociais e culturais e não somente um cuidado biológico: "rodas de gestantes".</li>
+        <li><strong className="text-pink-600">Garantir transporte:</strong> público gratuito da gestante para o atendimento pré-natal, quando necessário.</li>
+        <li><strong className="text-pink-600">Direito do(a) parceiro(a):</strong> de ser cuidado (realização de consultas, exames e ter acesso a informações) antes, durante e depois da gestação: "pré-natal do(a) parceiro(a)".</li>
+        <li><strong className="text-pink-600">Garantir acesso:</strong> à unidade de referência especializada, caso seja necessário.</li>
+        <li><strong className="text-pink-600">Estimular parto fisiológico:</strong> incluindo a elaboração do "Plano de Parto".</li>
+        <li><strong className="text-pink-600">Direito de conhecer o serviço de parto:</strong> toda gestante tem direito de conhecer e visitar previamente o serviço de saúde no qual irá dar à luz (vinculação).</li>
+        <li><strong className="text-pink-600">Conhecer e exercer direitos:</strong> as mulheres devem conhecer e exercer os direitos garantidos por lei no período gravídico-puerperal.</li>
+      </ol>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">4.1 Acolhimento:</h3>
+      <p className="mb-4">A Política Nacional de Humanização toma o acolhimento como postura prática nas ações de atenção e gestão das unidades de saúde, o que favorece a construção de uma relação de confiança e compromisso dos usuários com as equipes e os serviços, contribuindo para a promoção da cultura de solidariedade e para a legitimação do sistema público de saúde. O acolhimento da gestante na atenção básica implica a responsabilização pela integralidade do cuidado a partir da recepção da usuária com escuta qualificada e a partir do favorecimento do vínculo e da avaliação de vulnerabilidades de acordo com o seu contexto social, entre outros cuidados.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">4.2 Condições Básicas para a Assistência Pré-Natal:</h3>
+      <p className="mb-4">Para uma assistência pré-natal efetiva, deve-se garantir a identificação precoce das gestantes, acolhimento imediato, cadastramento, classificação de risco, acompanhamento periódico (mínimo de 6 consultas), incentivo ao parto normal, realização de exames e imunizações, oferta de medicamentos (sulfato ferroso, ácido fólico), avaliação nutricional, atenção à adolescente, práticas educativas e um sistema eficiente de referência e contrarreferência.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">4.3 O Papel da Equipe de Atenção Básica no Pré-Natal:</h3>
+      <p className="mb-4">As atribuições dos profissionais (agente comunitário de saúde, auxiliar/técnico de enfermagem, enfermeiro e médico) são cruciais no processo de territorialização, identificação de gestantes, atualização de informações e realização do cuidado integral. Estudos mostram que o acompanhamento de baixo risco por médicos generalistas e parteiras não traz aumento de resultados perinatais adversos em comparação com gineco-obstetras.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">4.3.3 Consulta de enfermagem/enfermeira(o) na atenção à gestante:</h3>
+      <p className="mb-4">A consulta de enfermagem é uma atividade independente, realizada privativamente pelo enfermeiro, e tem como objetivo propiciar condições para a promoção da saúde da gestante e a melhoria na sua qualidade de vida, mediante uma abordagem contextualizada e participativa. O profissional enfermeiro pode acompanhar inteiramente o pré-natal de baixo risco na rede básica de saúde, de acordo com o Ministério de Saúde e conforme garantido pela Lei do Exercício Profissional, regulamentada pelo Decreto nº 94.406/87.</p>
+    `,
+  },
+  'atencao-pre-natal-detalhada': {
+    title: '5. Atenção Pré-Natal',
+    page: '53-70',
+    fullSnippet: 'Para ampliar a captação precoce das gestantes, o Ministério da Saúde, por intermédio da Rede Alyne, incluiu o Teste Rápido de Gravidez nos exames de rotina do pré-natal, que pode ser realizado na própria UBS, o que acelera o processo necessário para a confirmação da gravidez e o início do pré-natal.',
+    content: `
+      <p className="text-lg font-semibold mb-2">Este capítulo detalha os procedimentos e condutas essenciais para o acompanhamento da gestante no pré-natal de baixo risco.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.1 Diagnóstico na Gravidez:</h3>
+      <div className="flex justify-center my-4">
+          <img src="https://placehold.co/300x200/F0F9FF/9A275A?text=Ultrassom" alt="Ilustração de ultrassom" className="rounded-lg shadow-md" />
+      </div>
+      <p className="mb-4">Para ampliar a captação precoce, o Teste Rápido de Gravidez foi incluído nos exames de rotina. A dosagem de gonadotrofina coriônica humana (BHCG) é o método mais sensível e confiável para diagnóstico precoce. O exame ultrassonográfico, idealmente entre 10 e 13 semanas, auxilia na determinação da idade gestacional, detecção de gestações múltiplas e malformações fetais. Sinais de presunção (atraso menstrual, náuseas, aumento das mamas) e de probabilidade (amolecimento da cérvice, positividade do BHCG) são importantes. Sinais de certeza incluem BCF (batimentos cardíacos fetais) detectados por sonar (a partir de 12 semanas) ou Pinard (a partir de 20 semanas), e percepção dos movimentos fetais (18-20 semanas).</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.2 Classificação de Risco Gestacional:</h3>
+      <p className="mb-4">A gestação é fisiológica, mas fatores de risco podem levar a evolução desfavorável. A avaliação do risco deve ser permanente em toda consulta para identificar precocemente "gestantes de alto risco" e garantir o acolhimento adequado. Fatores de risco incluem características individuais (idade, ocupação, situação familiar), história reprodutiva anterior (RN com restrição de crescimento, macrosomia, síndromes hemorrágicas/hipertensivas), e gravidez atual (ganho ponderal inadequado, infecção urinária, anemia). São detalhados fatores que permitem pré-natal na atenção básica, que indicam encaminhamento ao alto risco (cardiopatias, diabetes, HIV), e que indicam encaminhamento à urgência/emergência obstétrica (síndromes hemorrágicas, pré-eclampsia, amniorrexe prematura).</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.3 Calendário de Consultas:</h3>
+      <p className="mb-4">As consultas devem ser iniciadas precocemente (primeiro trimestre) e ser regulares, com um mínimo de 6 consultas, intercaladas entre médico e enfermeiro. A frequência é mensal até a 28ª semana, quinzenal entre 28 e 36 semanas, e semanal no termo (a partir da 36ª semana). Não há "alta" do pré-natal antes do parto.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.4 Roteiro da Primeira Consulta:</h3>
+      <p className="mb-4">A primeira consulta é fundamental para a coleta de dados socioepidemiológicos, antecedentes familiares, pessoais (gerais, ginecológicos, obstétricos) e situação da gravidez atual. A <strong className="text-pink-600">anamnese</strong> deve pesquisar sintomas e sanar dúvidas. O <strong className="text-pink-600">exame físico</strong> geral e específico inclui avaliação nutricional (peso, IMC), medida da PA, palpação abdominal, medida da altura uterina, ausculta dos BCF, registro dos movimentos fetais, verificação de edema, exame ginecológico e clínico das mamas. Os <strong className="text-pink-600">exames complementares</strong> de rotina solicitados na primeira consulta abrangem hemograma, tipagem sanguínea e fator Rh, Coombs indireto, glicemia de jejum, testes rápidos para sífilis e HIV, toxoplasmose, hepatite B, exame de urina e urocultura, ultrassonografia (opcional), citopatológico de colo de útero (se necessário), entre outros. As <strong className="text-pink-600">condutas gerais</strong> incluem interpretação dos dados, orientação alimentar, incentivo ao aleitamento, prescrição de suplementos (ferro e ácido fólico), orientação sobre sinais de risco, e referência para atendimento odontológico e imunização.</p>
+    `,
+  },
+  'calculo-idade-gestacional': {
+    title: '5.5 Cálculo da Idade Gestacional',
+    page: '71-72',
+    fullSnippet: 'Os métodos para esta estimativa dependem da data da última menstruação (DUM), que corresponde ao primeiro dia de sangramento do último ciclo menstrual referido pela mulher.',
+    content: `
+      <p className="text-lg font-semibold mb-2">Os métodos para estimar a idade gestacional dependem primariamente da Data da Última Menstruação (DUM), que é o primeiro dia de sangramento do último ciclo menstrual.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">I. Quando a DUM é conhecida e certa:</h3>
+      <p className="mb-4">Este é o método de escolha para mulheres com ciclos menstruais regulares e sem uso de métodos anticoncepcionais hormonais. Pode-se usar:</p>
+      <ul className="list-disc list-inside mb-4">
+        <li><strong className="text-pink-600">Uso do calendário:</strong> some o número de dias do intervalo entre a DUM e a data da consulta, dividindo o total por sete (resultado em semanas).</li>
+        <li><strong className="text-pink-600">Uso de disco (gestograma):</strong> coloque a seta sobre o dia e o mês correspondentes ao primeiro dia do último ciclo menstrual e observe o número de semanas indicado no dia e mês da consulta atual.</li>
+      </ul>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">II. Quando a DUM é desconhecida, mas se conhece o período do mês:</h3>
+      <p className="mb-4">Se a menstruação ocorreu no início, meio ou fim do mês, considere como DUM os dias 5, 15 e 25, respectivamente, e então utilize um dos métodos descritos acima.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">III. Quando a DUM e o período da última menstruação são desconhecidos:</h3>
+      <p className="mb-4">Nesses casos, a idade gestacional e a data provável do parto são inicialmente determinadas por aproximação, utilizando:</p>
+      <ul className="list-disc list-inside mb-4">
+        <li><strong className="text-pink-600">Medida da altura do fundo do útero e toque vaginal:</strong>
+          <ul className="list-circle list-inside ml-4">
+            <li>Até a 6ª semana: não ocorre alteração do tamanho uterino.</li>
+            <li>Na 8ª semana: o útero corresponde ao dobro do tamanho normal.</li>
+            <li>Na 10ª semana: o útero corresponde a três vezes o tamanho habitual.</li>
+            <li>Na 12ª semana: o útero enche a pelve, sendo palpável na sínfise púbica.</li>
+            <li>Na 16ª semana: o fundo uterino encontra-se entre a sínfise púbica e a cicatriz umbilical.</li>
+            <li>Na 20ª semana: o fundo do útero encontra-se na altura da cicatriz umbilical.</li>
+            <li>A partir da 20ª semana: existe relação direta entre as semanas da gestação e a medida da altura uterina (menos fiel a partir da 30ª semana).</li>
+          </ul>
+        </li>
+        <li><strong className="text-pink-600">Informação sobre a data de início dos movimentos fetais:</strong> que habitualmente ocorrem entre 18 e 20 semanas.</li>
+      </ul>
+      <p>Quando não for possível determinar clinicamente a idade gestacional, a <strong className="text-pink-600">ultrassonografia obstétrica</strong> deve ser solicitada o mais precocemente possível.</p>
+    `,
+  },
+  'calculo-data-parto': {
+    title: '5.6 Cálculo da Data Provável do Parto',
+    page: '72',
+    fullSnippet: 'Calcula-se a data provável do parto levando-se em consideração a duração média da gestação normal (280 dias ou 40 semanas, a partir da DUM), mediante a utilização de calendário.',
+    content: `
+      <p className="text-lg font-semibold mb-2">A Data Provável do Parto (DPP) é calculada considerando a duração média da gestação normal de 280 dias ou 40 semanas a partir da Data da Última Menstruação (DUM).</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Métodos de Cálculo:</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li><strong className="text-pink-600">Com o disco (gestograma):</strong> Posicione a seta sobre o dia e o mês correspondentes ao primeiro dia da última menstruação e observe a seta na data indicada como data provável do parto.</li>
+        <li><strong className="text-pink-600">Regra de Näegele:</strong> Consiste em somar sete dias ao primeiro dia da última menstruação e subtrair três meses ao mês em que ocorreu (ou adicionar nove meses, se corresponder aos meses de janeiro a março). Caso o número de dias encontrado for maior do que o número de dias do mês, passe os dias excedentes para o mês seguinte, adicionando um ao final do cálculo do mês.</li>
+      </ul>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Exemplos:</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li>DUM: 13/09/04 &rarr; DPP: 20/06/05</li>
+        <li>DUM: 10/02/04 &rarr; DPP: 17/11/04</li>
+        <li>DUM: 27/01/04 &rarr; DPP: 03/11/04</li>
+      </ul>
+    `,
+  },
+  'avaliacao-nutricional': {
+    title: '5.7 Avaliação do Estado Nutricional e Ganho de Peso',
+    page: '73-88',
+    fullSnippet: 'A avaliação do estado nutricional da gestante consiste na tomada da medida do peso e da altura e o cálculo da semana gestacional, o que permite a classificação do índice de massa corporal (IMC) por semana gestacional.',
+    content: `
+      <p className="text-lg font-semibold mb-2">A avaliação do estado nutricional da gestante é um componente essencial do pré-natal, consistindo na medida do peso e da altura para o cálculo do Índice de Massa Corporal (IMC) por semana gestacional, o que permite a classificação do estado nutricional e o acompanhamento do ganho de peso até o final da gestação.</p>
+      <div className="flex justify-center my-4">
+          <img src="https://placehold.co/300x200/F0F9FF/9A275A?text=Alimentação+Saudável" alt="Ilustração de alimentação saudável" className="rounded-lg shadow-md" />
+      </div>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.7.1 Procedimentos para a medida de peso:</h3>
+      <p className="mb-4">Recomenda-se a utilização de balança eletrônica ou mecânica calibrada. A gestante deve estar descalça e vestida apenas com avental ou roupas leves. O peso deve ser lido e anotado em quilogramas e gramas.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.7.2 Procedimentos para a medida da altura:</h3>
+      <p className="mb-4">A gestante deve estar em pé e descalça, no centro da plataforma da balança (ou antropômetro vertical), com braços estendidos. Calcanhares, nádegas e espáduas devem se aproximar da haste vertical, e a cabeça deve estar erguida. A leitura deve ser feita e anotada em centímetros.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.7.3 Cálculo do Índice de Massa Corporal (IMC):</h3>
+      <p className="mb-4">A fórmula utilizada é: IMC = Peso (kg) / Altura (m) x Altura (m).</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.7.4 Procedimentos para o diagnóstico nutricional:</h3>
+      <p className="mb-4">O diagnóstico nutricional, realizado na primeira consulta, subsidia a previsão do ganho de peso. A idade gestacional é calculada em semanas (com regras de arredondamento). Com base na Tabela 1 (Avaliação do estado nutricional da gestante segundo o índice de massa corporal por semana gestacional), o IMC é classificado em: Baixo peso, Adequado, Sobrepeso ou Obesidade. O IMC pré-gestacional ou calculado até a 13ª semana é o ideal para o diagnóstico inicial.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.7.5 Orientação Alimentar para a Gestante:</h3>
+      <p className="mb-4">A nutrição é de fundamental importância para o prognóstico da gestação, pois o período gestacional eleva as necessidades nutricionais. As orientações visam promover hábitos alimentares saudáveis e controlar o peso. Pontos chave incluem:</p>
+      <ul className="list-disc list-inside mb-4">
+        <li><strong className="text-pink-600">Frequência das refeições:</strong> Pelo menos três refeições principais e dois lanches saudáveis por dia, evitando jejum prolongado.</li>
+        <li><strong className="text-pink-600">Hidratação:</strong> Pelo menos 2 litros (6 a 8 copos) de água por dia. Evitar líquidos durante as refeições e bebidas açucaradas ou cafeinadas.</li>
+        <li><strong className="text-pink-600">Cereais, tubérculos e raízes:</strong> Incluir diariamente seis porções (arroz, milho, pães, batatas, mandioca), preferindo integrais (fontes de carboidratos, fibras, vitaminas e minerais).</li>
+        <li><strong className="text-pink-600">Verduras, legumes e frutas:</strong> Consumir diariamente pelo menos três porções de legumes/verduras e três ou mais de frutas (fontes de vitaminas, minerais e fibras, essenciais para o feto e a mãe). Preferir crus e lavar bem.</li>
+        <li><strong className="text-pink-600">Feijões:</strong> Comer feijão com arroz todos os dias ou pelo menos cinco vezes na semana (combinação completa de proteínas). Variar tipos de feijão e evitar carnes gordas/salgadas no preparo.</li>
+        <li><strong className="text-pink-600">Leite e derivados, carnes, peixes e ovos:</strong> Consumir diariamente três porções de leite/derivados (cálcio) e uma porção de carnes/aves/peixes/ovos (proteínas de boa qualidade). Retirar gordura aparente das carnes e pele das aves. Evitar carnes cruas ou mal passadas.</li>
+        <li><strong className="text-pink-600">Gorduras e açúcares:</strong> Diminuir o consumo de gorduras (máximo uma porção diária de óleos vegetais, azeite, manteiga ou margarina). Preferir assados/cozidos. Evitar refrigerantes, sucos industrializados, biscoitos recheados e doces em excesso (risco de complicações).</li>
+        <li><strong className="text-pink-600">Sal:</strong> Diminuir a quantidade de sal na comida (máximo 5g/dia). Evitar alimentos industrializados com muito sódio. Usar temperos naturais. Utilizar somente sal iodado.</li>
+        <li><strong className="text-pink-600">Ferro e vitamina C:</strong> Para evitar anemia, consumir diariamente alimentos fontes de ferro (carnes, vísceras, feijão, folhas verde-escuras), juntamente com fontes de vitamina C (acerola, laranja, caju, limão) para melhor absorção. Suplementação de ferro preventiva a partir da 20ª semana.</li>
+        <li><strong className="text-pink-600">Atividade física:</strong> Manter o ganho de peso gestacional dentro dos limites saudáveis, praticar atividade física moderada (30 minutos/dia) e evitar bebidas alcoólicas e fumo.</li>
+      </ul>
+      <p>O acompanhamento do nutricionista ou outro profissional de saúde é essencial para o monitoramento da evolução do peso da gestante.</p>
+    `,
+  },
+  'controle-pressao-arterial': {
+    title: '5.8 Controle da Pressão Arterial (PA)',
+    page: '88-92',
+    fullSnippet: 'Conceitua-se hipertensão arterial na gestação a partir dos seguintes parâmetros: A observação de níveis tensionais absolutos iguais ou maiores do que 140mmHg de pressão sistólica e iguais ou maiores do que 90mmHg de pressão diastólica, mantidos em medidas repetidas, em condições ideais, em pelo menos três ocasiões.',
+    content: `
+      <p className="text-lg font-semibold mb-2">A medida da Pressão Arterial (PA) é uma conduta essencial e recomendada em todas as consultas de pré-natal para identificar e gerenciar síndromes hipertensivas na gestação.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Conceito de Hipertensão Arterial na Gestação:</h3>
+      <p className="mb-4">Definida por níveis tensionais absolutos iguais ou maiores do que 140mmHg (sistólica) e iguais ou maiores do que 90mmHg (diastólica), mantidos em medidas repetidas em condições ideais. A PA diastólica é identificada pela fase V de Korotkoff. Um aumento de 30mmHg na sistólica e/ou 15mmHg na diastólica em relação aos níveis pré-gestacionais serve como sinal de alerta.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Classificação da HAS na Gestação:</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li><strong className="text-pink-600">Pré-eclampsia:</strong> HAS e proteinúria (>300 mg/24h) após a 20ª semana.</li>
+        <li><strong className="text-pink-600">Eclâmpsia:</strong> Pré-eclampsia complicada por convulsões.</li>
+        <li><strong className="text-pink-600">Pré-eclampsia superposta à HAS crônica:</strong> Elevação aguda da PA com proteinúria, trombocitopenia ou anormalidades da função hepática em gestantes com HAS crônica.</li>
+        <li><strong className="text-pink-600">Hipertensão arterial sistêmica crônica:</strong> Hipertensão registrada antes da gestação, ou antes da 20ª semana, ou persistente por mais de 12 semanas pós-parto.</li>
+        <li><strong className="text-pink-600">Hipertensão gestacional:</strong> HAS detectada após a 20ª semana, sem proteinúria, podendo ser transitória (normaliza após o parto) ou crônica.</li>
+      </ul>
+      <p className="mb-4">As alterações hipertensivas estão associadas a complicações graves e maior morbimortalidade materna e perinatal. O diagnóstico precoce e o tratamento adequado são fundamentais.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">I. Procedimentos recomendados para a medida da Pressão Arterial:</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li><strong className="text-pink-600">Preparo da paciente:</strong> explicar o procedimento, repouso de 5 minutos, não conversar, bexiga vazia, sem exercícios físicos, álcool, café ou fumo nos 60-30 minutos anteriores.</li>
+        <li><strong className="text-pink-600">Posicionamento:</strong> sentada, pernas descruzadas, pés apoiados, dorso recostado, braço na altura do coração (livre de roupas, apoiado, palma para cima, cotovelo fletido). Pode ser no decúbito lateral esquerdo.</li>
+        <li><strong className="text-pink-600">Medida:</strong> medir circunferência do braço e selecionar manguito adequado. Colocar manguito 2-3cm acima da fossa cubital. Estimar sistólica pela palpação do pulso radial. Palpar artéria braquial e posicionar estetoscópio. Inflar rapidamente 20-30mmHg acima do estimado. Desinflar lentamente (2mmHg/segundo). Determinar sistólica (primeiro som) e diastólica (desaparecimento dos sons). Auscultar 20-30mmHg abaixo do último som. Informar valores e anotar.</li>
+      </ul>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">II. Conduta conforme a medida da Pressão Arterial:</h3>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border border-pink-300 rounded-lg shadow-sm mb-4">
+          <thead>
+            <tr className="bg-pink-200 text-pink-800">
+              <th className="py-2 px-4 border-b">Achados</th>
+              <th className="py-2 px-4 border-b">Condutas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="hover:bg-pink-50">
+              <td className="py-2 px-4 border-b">Níveis de PA conhecidos e normais antes da gestação (manutenção dos mesmos níveis de PA) / Níveis de PA desconhecidos antes da gestação (valores < 140/90mmHg).</td>
+              <td className="py-2 px-4 border-b">Níveis tensionais normais: Mantenha o calendário habitual; Cuide da alimentação; Pratique atividade física regularmente.</td>
+            </tr>
+            <tr className="hover:bg-pink-50">
+              <td className="py-2 px-4 border-b">Níveis de PA conhecidos e normais antes da gestação: Aumento da PA, mantendo nível < 140/90mmHg.</td>
+              <td className="py-2 px-4 border-b">Sinal de alerta: Diminua a ingestão de sal; Aumente a ingestão hídrica; Pratique atividade física regularmente. Agende controles mais próximos.</td>
+            </tr>
+            <tr className="hover:bg-pink-50">
+              <td className="py-2 px-4 border-b">Níveis de PA conhecidos ou desconhecidos antes da gestação: Valores da PA > 140/90mmHg e < 160/110, sem sintomas e sem ganho ponderal maior do que 500g semanais.</td>
+              <td className="py-2 px-4 border-b">Considere HAS na gestação: Atente para erro de cálculo da IG; Avalie polidrâmnio, macrossomia, gravidez gemelar, mola hidatiforme; Solicite ultrassonografia; Marque retorno em 15 dias ou encaminhe para alto risco.</td>
+            </tr>
+            <tr className="hover:bg-pink-50">
+              <td className="py-2 px-4 border-b">Níveis de PA conhecidos ou desconhecidos antes da gestação: Valores de PA > 140/90mmHg, proteinúria positiva e/ou com sintomas clínicos (cefaleia, epigastralgia, escotomas, reflexos tendíneos aumentados) ou paciente assintomática, porém com níveis de PA > 160/110mmHg.</td>
+              <td className="py-2 px-4 border-b">Paciente com suspeita de pré-eclampsia grave: Referir imediatamente a gestante ao pré-natal de alto risco e/ou à unidade de referência hospitalar.</td>
+            </tr>
+            <tr className="hover:bg-pink-50">
+              <td className="py-2 px-4 border-b">Paciente com hipertensão arterial crônica, moderada ou grave, ou em uso de medicação anti-hipertensiva.</td>
+              <td className="py-2 px-4 border-b">Paciente de risco: Referir a gestante ao pré-natal de alto risco.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="mb-4">O acompanhamento da PA deve ser avaliado em conjunto com o ganho de peso súbito e/ou a presença de edema, principalmente a partir da 24ª semana. Ganho de peso superior a 500g por semana, mesmo sem aumento da PA, deve ter retornos antecipados.</p>
+    `,
+  },
+  'palpacao-obstetrica': {
+    title: '5.9 Palpação Obstétrica e Medida da Altura Uterina (AU)',
+    page: '92-109',
+    fullSnippet: 'A palpação obstétrica deve ser realizada antes da medida da altura uterina. Ela deve iniciar-se pela delimitação do fundo uterino, bem como de todo o contorno da superfície uterina (este procedimento reduz o risco de erro da medida da altura uterina). A identificação da situação e da apresentação fetal é feita por meio da palpação obstétrica, procurando-se identificar os polos cefálico e pélvico e o dorso fetal, facilmente identificados a partir do terceiro trimestre.',
+    content: `
+      <p className="text-lg font-semibold mb-2">A palpação obstétrica e a medida da altura uterina são procedimentos cruciais para o acompanhamento do desenvolvimento fetal e a identificação de possíveis desvios da normalidade. O objetivo é identificar o crescimento fetal, diagnosticar desvios a partir da relação entre a altura uterina e a idade gestacional, e identificar a situação e apresentação fetal.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Técnica para palpação abdominal (Manobras de Leopold - 4 passos):</h3>
+      <ol className="list-decimal list-inside mb-4">
+        <li><strong className="text-pink-600">1º tempo:</strong> Delimitar o fundo do útero com a borda cubital de ambas as mãos e reconhecer a parte fetal que o ocupa.</li>
+        <li><strong className="text-pink-600">2º tempo:</strong> Deslizar as mãos do fundo uterino até o polo inferior do útero, procurando sentir o dorso e as pequenas partes do feto.</li>
+        <li><strong className="text-pink-600">3º tempo:</strong> Explorar a mobilidade do polo que se apresenta no estreito superior pélvico.</li>
+        <li><strong className="text-pink-600">4º tempo:</strong> Determinar a situação fetal, colocando as mãos sobre as fossas ilíacas, deslizando-as em direção à escava pélvica e abarcando o polo fetal. Podem ser encontradas situações longitudinal (cefálica e pélvica), transversa (córmica) e oblíqua.</li>
+      </ol>
+      <p className="mb-4">A situação transversa e a apresentação pélvica, ao final da gestação, podem significar risco no momento do parto, exigindo referência à unidade hospitalar.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.9.1 Medida da Altura Uterina (AU):</h3>
+      <p className="mb-4">Objetivo é o acompanhamento do crescimento fetal e detecção precoce de alterações. A gestante é posicionada em decúbito dorsal. A fita métrica é fixada na borda superior da sínfise púbica e deslizada até o fundo do útero, lendo a medida em centímetros. Curvas de altura uterina para idade gestacional (percentil 10 e 90) são utilizadas como padrão de referência.</p>
+      <p className="mb-4">Interpretação: Medidas entre as curvas são normais. Acima da curva superior pode indicar erro de cálculo da IG, polidrâmnio, macrossomia, gestação gemelar, mola hidatiforme (necessita avaliação médica e USG). Abaixo da curva inferior pode indicar feto morto, oligoidrâmnio, ou restrição de crescimento intrauterino (necessita avaliação médica e USG).</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.9.2 Ausculta dos Batimentos Cardiofetais (BCF):</h3>
+      <p className="mb-4">Objetivo é constatar presença, ritmo, frequência e normalidade dos BCF em cada consulta (normalmente entre 120 e 160 bpm). Realizada com sonar (a partir de 12 semanas) ou Pinard (a partir de 20 semanas). A técnica envolve identificar o dorso fetal, posicionar o estetoscópio/sonar, controlar o pulso da gestante e contar os batimentos por um minuto. Bradicardia ou taquicardia são sinais de alerta, indicando possível sofrimento fetal e exigindo avaliação médica ou encaminhamento.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.9.3 Registro dos Movimentos Fetais (RDMF):</h3>
+      <p className="mb-4">Avaliação clínica do bem-estar fetal a partir da 34ª semana. A gestante escolhe um período do dia, alimenta-se, senta-se e registra os movimentos por no máximo uma hora. Seis movimentos em menos de uma hora são suficientes. Se em duas horas consecutivas não houver seis movimentos, deve-se procurar a unidade de saúde (inatividade fetal).</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.9.4 Teste do Estímulo Sonoro Simplificado (Tess):</h3>
+      <p className="mb-4">Utiliza sonar doppler e buzina. Posiciona-se a mulher, ausculta-se o BCF basal, aplica-se um estímulo sonoro no polo cefálico fetal, e repete-se a ausculta. Teste positivo indica aumento de 15 batimentos ou movimentos fetais bruscos. Teste negativo (ausência de resposta após duas tentativas) indica referência a serviço especializado para avaliação da vitalidade fetal.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.9.5 Verificação da Presença de Edema:</h3>
+      <p className="mb-4">Detectar precocemente edema patológico. Palpa-se a pele na região perimaleolar e pré-tibial (membros inferiores) e na região sacra, buscando depressão duradoura. Edema generalizado (face, tronco, membros) ou unilateral com dor e sinais flogísticos (trombose) sugere condições de risco e exige avaliação médica ou encaminhamento.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.9.6 Exame Ginecológico e Coleta de Material para Colpocitologia Oncótica:</h3>
+      <p className="mb-4">Inclui inspeção vulvar, exame especular e toque vaginal. A coleta para rastreamento do câncer do colo do útero não é contraindicada na gravidez (preferencialmente até o 7º mês, apenas ectocérvice). Condutas para resultados alterados (NIC I, II, III, carcinoma) com referência a centros especializados.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.9.7 Exame Clínico das Mamas:</h3>
+      <p className="mb-4">Realizado para detectar anormalidades e educar sobre câncer de mama e aleitamento materno. Envolve inspeção estática e dinâmica, e palpação de todas as áreas do tecido mamário e linfonodos. Orientações sobre o uso de sutiã, banhos de sol, e evitar sabonetes/cremes no mamilo são importantes para o preparo da amamentação.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.9.8 O Preparo das Mamas para a Amamentação:</h3>
+      <p className="mb-4">O preparo para a amamentação deve ser iniciado na gravidez, conversando sobre as vantagens para mãe, bebê, família e comunidade. Orientações sobre manejo (posição adequada, pega correta do mamilo/aréola para evitar fissuras e ingurgitamento) e a técnica de ordenha manual são cruciais para o sucesso do aleitamento.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.9.9 Exames Complementares de Rotina e Condutas:</h3>
+      <p className="mb-4">Um roteiro detalhado para a solicitação de exames no pré-natal de baixo risco é fornecido, de acordo com a idade gestacional. Inclui: Hemograma, Tipagem sanguínea e fator Rh, Coombs indireto (se Rh negativo), Glicemia de jejum, Teste rápido de triagem para sífilis e/ou VDRL/RPR, Teste rápido diagnóstico anti-HIV, Anti-HIV, Toxoplasmose IgM e IgG, Sorologia para hepatite B (HbsAg), Urocultura + urina tipo I, Ultrassonografia obstétrica (não é obrigatório), Citopatológico de colo de útero (se necessário), Exame da secreção vaginal (se indicação clínica), Parasitológico de fezes (se indicação clínica), Eletroforese de hemoglobina. As condutas para cada resultado de exame são específicas e visam garantir a saúde materno-fetal.</p>
+    `,
+  },
+  'queixas-comuns': {
+    title: '5.11 Queixas Mais Comuns na Gestação',
+    page: '127-132',
+    fullSnippet: 'As orientações a seguir são válidas para os casos em que os sintomas são manifestações ocasionais e transitórias, não refletindo, geralmente, patologias clínicas mais complexas. A maioria das queixas diminui ou desaparece sem o uso de medicamentos, que devem ser evitados ao máximo.',
+    content: `
+      <p className="text-lg font-semibold mb-2">As queixas mais comuns na gestação são, em sua maioria, manifestações ocasionais e transitórias, não indicando patologias graves e tendendo a desaparecer sem uso de medicamentos.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.1 Náuseas, Vômitos e Tonturas:</h3>
+      <p className="mb-4">Comuns no início da gestação. Orientações incluem dieta fracionada (6 refeições leves ao dia), evitar frituras, gorduras e alimentos com cheiros fortes. Ingerir alimentos sólidos antes de levantar e líquidos nos intervalos das refeições. Em casos graves de hiperêmese gravídica, procurar atendimento médico.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.2 Pirose (Azia):</h3>
+      <p className="mb-4">Orientar dieta fracionada, evitar frituras, café, chás pretos, mates, doces, álcool e fumo. Antiácidos podem ser usados sob orientação médica.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.3 Sialorreia (Salivação Excessiva):</h3>
+      <p className="mb-4">Sintoma comum no início da gestação. Dieta semelhante à de náuseas, deglutir saliva e ingerir líquidos em abundância.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.4 Fraquezas e Desmaios:</h3>
+      <p className="mb-4">Evitar mudanças bruscas de posição, inatividade e jejum prolongado. Sentar com a cabeça abaixada ou deitar em decúbito lateral melhora a sensação.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.5 Dor Abdominal, Cólicas, Flatulência e Obstipação Intestinal:</h3>
+      <p className="mb-4">Verificar se não são contrações uterinas. Sugerir uso de cinta e exercícios apropriados se houver flacidez abdominal. Para flatulências/obstipação, dieta rica em fibras, aumento de líquidos e evitar alimentos fermentativos. Caminhadas e medicamentos específicos podem ser indicados.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.6 Hemorroidas:</h3>
+      <p className="mb-4">Dieta rica em fibras, evitar papel higiênico áspero, higiene perianal com água e sabão neutro, banhos de vapor ou compressas mornas. Procurar médico em caso de dor ou sangramento persistente.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.7 Corrimento Vaginal:</h3>
+      <p className="mb-4">Aumento de fluxo é comum. Não prescrever cremes sem diagnóstico de infecção. Procurar médico se fluxo for amarelado, esverdeado, com odor fétido ou prurido.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.8 Queixas Urinárias:</h3>
+      <p className="mb-4">Aumento de micções é comum. Incentivar ingestão hídrica. Procurar médico se houver dor ao urinar ou sangue na urina, com ou sem febre.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.9 Falta de Ar e Dificuldades para Respirar:</h3>
+      <p className="mb-4">Frequentes devido ao aumento do útero e ansiedade. Repouso em decúbito lateral esquerdo, conversar sobre angústias. Atentar para outros sintomas que possam indicar problemas cardíacos ou respiratórios.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.10 Mastalgia (Dor nas Mamas):</h3>
+      <p className="mb-4">Incomodo mamário é normal pela fisiologia. Recomendar sutiã com boa sustentação. Orientar sobre colostro.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.11 Lombalgia (Dor Lombar):</h3>
+      <p className="mb-4">Corrigir postura, usar sapatos confortáveis, aplicar calor local. Analgésicos sob orientação médica.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.12 Cefaleia (Dor de Cabeça):</h3>
+      <p className="mb-4">Afastar hipertensão e pré-eclâmpsia. Conversar sobre tensões e medos. Procurar médico se persistir.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.13 Sangramento nas Gengivas:</h3>
+      <p className="mb-4">Recomendar escovação após refeições com escova macia, massagem na gengiva e uso de fio dental. Agendar atendimento odontológico.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.14 Varizes:</h3>
+      <p className="mb-4">Não permanecer muito tempo em pé/sentada. Repousar com pernas elevadas. Não usar roupas justas. Meia-calça elástica pode ajudar. Avaliar risco de tromboembolismo.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.15 Câimbras:</h3>
+      <p className="mb-4">Massagear músculo, aplicar calor local. Evitar excesso de exercícios. Realizar alongamentos.
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.16 Cloasma Gravídico (Manchas Escuras no Rosto):</h3>
+      <p className="mb-4">Comum na gravidez, diminui após o parto. Recomendar protetor solar e evitar exposição solar direta.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.11.17 Estrias:</h3>
+      <p className="mb-4">Resultam da distensão dos tecidos, sem método eficaz de prevenção. Massagens com óleos ou cremes podem ser usadas.</p>
+    `,
+  },
+  'situacoes-especiais': {
+    title: '5.12 Situações Especiais na Gestação',
+    page: '132-139',
+    fullSnippet: 'A prevalência mundial de gestação múltipla é de 10:1000 partos, com ampla variação local. A gestação múltipla é associada a taxas mais altas de quase todas as complicações da gravidez, com exceção de macrossomia e pós-datismo.',
+    content: `
+      <p className="text-lg font-semibold mb-2">A gestação pode apresentar situações especiais que requerem atenção diferenciada para garantir a saúde da mãe e do bebê.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.12.1 Gestação Múltipla:</h3>
+      <p className="mb-4">É a gravidez com dois ou mais fetos. Associada a complicações como prematuridade (principal risco), malformações e restrição de crescimento. Fatores como idade materna avançada, raça negra, multiparidade e técnicas de reprodução assistida aumentam a incidência. O diagnóstico de certeza é ultrassonográfico, mas a suspeita pode surgir por altura uterina elevada ou BHCG muito alto. A nutrição deve ser adaptada, com maior ganho de peso. Gestações monocoriônicas têm maior risco de mortalidade e complicações e devem ser acompanhadas em pré-natal de alto risco.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.12.2 Gravidez na Adolescência:</h3>
+      <p className="mb-4">A adolescência é uma fase de grandes transformações. A gravidez nesta fase é multifatorial (social, econômica, pessoal) e exige atenção diferenciada. A falta de informação sobre sexualidade e contracepção, além do baixo acesso a serviços de saúde, contribuem para gestações não planejadas. O atendimento deve ser por equipe multiprofissional, com sensibilidade às especificidades da adolescente (dependência familiar, imaturidade emocional). A captação precoce é fundamental. É importante que o pai adolescente participe do processo. Aspectos nutricionais, anemia e infecções são de atenção especial. O acompanhamento no puerpério para mães e pais adolescentes é crucial para prevenir depressão e segunda gravidez.</p>
+    `,
+  },
+  'mudancas-habitos': {
+    title: '5.13 Mudanças de Hábitos de Vida e Medidas Preventivas',
+    page: '140-141',
+    fullSnippet: 'O exercício aeróbico regular durante a gravidez parece melhorar ou manter a capacidade física e a boa imagem corporal. Entretanto, os dados ainda são insuficientes para esclarecer os possíveis riscos e benefícios para a mãe e o recém-nascido.',
+    content: `
+      <p className="text-lg font-semibold mb-2">Algumas mudanças nos hábitos de vida e a adoção de medidas preventivas são importantes para uma gestação saudável.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.13.1 Práticas de Atividade Física:</h3>
+      <p className="mb-4">Exercícios aeróbicos regulares podem melhorar a capacidade física e a imagem corporal. Gestantes saudáveis devem ser avaliadas antes de iniciar. Evitar atividades com risco de quedas ou trauma abdominal. Recomenda-se 30 minutos de exercícios moderados diariamente.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.13.2 Viagens durante a Gravidez:</h3>
+      <p className="mb-4">Viagens aéreas são geralmente seguras até quatro semanas antes do parto. Viagens longas (carro ou avião) aumentam o risco de trombose venosa, sendo o uso de meias de compressão recomendado. O cinto de segurança no carro deve ser usado de forma correta (acima e abaixo do abdome).</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.13.3 Atividade Sexual na Gravidez:</h3>
+      <p className="mb-4">Manter relações sexuais não está associado a efeitos adversos, nem mesmo no terceiro trimestre. A restrição só deve ocorrer por indicação médica (ex: placenta prévia, risco de prematuridade).</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.13.4 Trabalhando durante a Gestação:</h3>
+      <p className="mb-4">Geralmente seguro. No entanto, gestantes com histórico de abortamento ou que ficam muito tempo em pé/caminhando podem ter maior risco de abortamento espontâneo.</p>
+    `,
+  },
+  'praticas-integrativas': {
+    title: '5.14 As Práticas Integrativas e Complementares',
+    page: '141-143',
+    fullSnippet: 'A publicação da Política Nacional de Práticas Integrativas e Complementares (Portaria nº 971/2006) inclui no SUS racionalidades médicas e recursos terapêuticos, como a medicina tradicional chinesa/acupuntura, a homeopatia, a medicina antroposófica, o uso de plantas medicinais e o termalismo social/crenoterapia.',
+    content: `
+      <p className="text-lg font-semibold mb-2">A Política Nacional de Práticas Integrativas e Complementares no SUS (Portaria nº 971/2006) incorpora diversas racionalidades médicas e recursos terapêuticos, como a homeopatia e a medicina tradicional chinesa (MTC).</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Homeopatia na Saúde Materno-Infantil:</h3>
+      <p className="mb-4">A homeopatia é uma racionalidade médica com sistema semiológico, clínico e terapêutico próprio, complementando a biomedicina. Promove o autoconhecimento e a autonomia, sendo útil na prevenção e tratamento de agravos físicos e emocionais na gestação, parto e puerpério. Pode ser aplicada a doenças crônicas e agudas, auxiliando no fortalecimento da relação mãe-bebê e na redução da morbimortalidade neonatal. Requer profissional especializado.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.15 A Medicina Tradicional Chinesa (MTC) na Saúde Materno-Infantil:</h3>
+      <p className="mb-4">A MTC, de origem oriental, utiliza conceitos como Yin e Yang, teoria dos meridianos e cinco elementos. Seus recursos terapêuticos incluem acupuntura, moxabustão, ventosa, fitoterapia chinesa e práticas de meditação. A acupuntura pode ser usada na gravidez, no trabalho de parto e puerpério. Requer profissional especializado. A Shantala, massagem indiana para bebês, fortalece o vínculo, melhora funções e relaxamento.</p>
+    `,
+  },
+  'saude-bucal': {
+    title: '5.16 Abordagens da Saúde Bucal na Gestação',
+    page: '143-146',
+    fullSnippet: 'A gestação é um acontecimento fisiológico, com alterações orgânicas naturais, mas que impõe aos profissionais de saúde a necessidade de conhecimentos para uma abordagem diferenciada. O estado da saúde bucal apresentado durante a gravidez tem relação com a saúde geral da gestante e pode influenciar a saúde geral e bucal do bebê.',
+    content: `
+      <p className="text-lg font-semibold mb-2">A saúde bucal durante a gravidez é essencial, pois o estado bucal da gestante pode influenciar a saúde geral dela e do bebê. A integração entre profissionais de saúde bucal e a equipe de saúde é fundamental.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Problemas Bucais Mais Comuns na Gravidez:</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li><strong className="text-pink-600">Cárie dentária:</strong> Risco aumentado devido à acidez bucal, aumento da frequência alimentar e menor atenção à higiene. Escovação e uso de fio dental são cruciais.</li>
+        <li><strong className="text-pink-600">Erosões no esmalte dentário:</strong> Podem ocorrer por exposição ao ácido gástrico em casos de hiperêmese gravídica. Evitar escovação imediata após vômito e usar flúor.</li>
+        <li><strong className="text-pink-600">Mobilidade dentária:</strong> Temporária e sem perda de dente, devido a alterações hormonais.</li>
+        <li><strong className="text-pink-600">Gengivite:</strong> Muito comum, agravada por variações hormonais e imunológicas. Higiene bucal completa e, se necessário, limpeza profissional.</li>
+        <li><strong className="text-pink-600">Periodontite:</strong> Inflamação destrutiva que pode afetar a gravidez. A boa higiene bucal e o controle da placa são essenciais.</li>
+      </ul>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Atendimento Odontológico de Gestantes:</h3>
+      <p className="mb-4">O 1º trimestre é menos adequado para tratamento (evitar radiografias). O 2º trimestre é o mais indicado para intervenções essenciais. O 3º trimestre tem maior risco de síncope, hipertensão e anemia; consultas breves e com a gestante inclinada para o lado esquerdo. Radiografias devem ser feitas com proteção. Urgências podem ser atendidas em qualquer período.</p>
+      <p>Medicamentos como a tetraciclina devem ser evitados. A equipe de saúde deve desmistificar medos e mitos sobre saúde bucal na gravidez, promovendo o autocuidado.</p>
+    `,
+  },
+  'orientacoes-educativas': {
+    title: '5.17 Orientações e Ações Educativas',
+    page: '146-149',
+    fullSnippet: 'Informações sobre as diferentes vivências devem ser trocadas entre as mulheres e os profissionais de saúde. Esta possibilidade de intercâmbio de experiências e conhecimentos é considerada a melhor forma de promover a compreensão do processo de gestação.',
+    content: `
+      <p className="text-lg font-semibold mb-2">A troca de informações e experiências entre gestantes e profissionais de saúde é a melhor forma de promover a compreensão do processo gestacional e a saúde.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Aspectos a serem abordados:</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li>A importância do pré-natal e cuidados de higiene.</li>
+        <li>Realização de atividade física (com orientações específicas).</li>
+        <li>Nutrição (prevenção de distúrbios, suplementação de ferro, ácido fólico, vitamina A).</li>
+        <li>Desenvolvimento da gestação, modificações corporais e emocionais.</li>
+        <li>Medos e fantasias sobre a gestação e o parto.</li>
+        <li>Atividade sexual, prevenção de DST/Aids e teste anti-HIV.</li>
+        <li>Sintomas comuns na gravidez e orientações para queixas.</li>
+        <li><strong className="text-pink-600">Sinais de alerta:</strong> sangramento vaginal, dor de cabeça, transtornos visuais, dor abdominal, febre, perdas vaginais, dificuldade respiratória e cansaço.</li>
+        <li>Preparo para o parto (local, transporte, recursos, apoio familiar).</li>
+        <li>Orientações e incentivo ao parto normal e aleitamento materno.</li>
+        <li>Importância do planejamento familiar.</li>
+        <li>Cuidados pós-parto com a mulher e o recém-nascido.</li>
+        <li>Saúde mental e violência doméstica/sexual.</li>
+        <li>Benefícios legais e direitos da mulher (incluindo a Lei do Acompanhante).</li>
+        <li>Impacto do trabalho sobre a gestação.</li>
+        <li><strong className="text-pink-600">Participação do pai:</strong> fundamental para o vínculo com o filho, com direito a acompanhante no parto.</li>
+        <li>Gravidez na adolescência e suas dificuldades.</li>
+        <li>Triagem neonatal (teste do pezinho).</li>
+        <li>Acompanhamento do crescimento e desenvolvimento da criança (vacinação, higiene).</li>
+        <li>Orientações alimentares para evitar infecções (leite pasteurizado, evitar carnes/ovos crus, patês).</li>
+      </ul>
+    `,
+  },
+  'parto-normal-vs-cesariana': {
+    title: '5.18 Parto Normal vs. Cesariana',
+    page: '148-151',
+    fullSnippet: 'Os índices de nascimentos por cesariana vêm aumentando por vários motivos. Inicialmente, as indicações eram por distócia mecânica, desproporção céfo-pélvica e más apresentações. O procedimento ficou mais seguro com o uso de medicações eficazes que previnem as suas principais complicações, como a infecção puerperal, a hemorragia e as complicações anestésicas.',
+    content: `
+      <p className="text-lg font-semibold mb-2">Os índices de nascimentos por cesariana têm aumentado, mas o parto normal (vaginal) ainda é a forma ideal de dar à luz, com inúmeras vantagens.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.18.1 Indicações Obstétricas de Parto Cesáreo:</h3>
+      <p className="mb-4">
+        <strong className="text-pink-600">Absolutas:</strong> desproporção céfalo-pélvica, cicatriz uterina prévia corporal, situação fetal transversa, herpes genital ativo, prolapso de cordão, placenta prévia oclusiva total, morte materna com feto vivo.
+        <strong className="text-pink-600">Relativas:</strong> feto não reativo em trabalho de parto, gestante HIV positivo (dependendo da carga viral), descolamento prematuro de placenta (dependendo do estágio do parto), apresentação pélvica, gravidez gemelar (depende da relação entre os fetos), cesárea prévia, macrossomia fetal, cérvice desfavorável à indução do parto, psicopatia.
+      </p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.18.2 Desvantagens e Riscos da Cesariana:</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li>Período de recuperação mais longo.</li>
+        <li>Maior morbidade materna (risco de parada cardíaca, hematoma de parede, histerectomia, infecção puerperal, complicações anestésicas, tromboembolismo venoso, hemorragia).</li>
+        <li>Aumento do risco de problemas respiratórios neonatais (síndrome respiratória, taquipneia transitória) e maior tempo de hospitalização para o bebê.</li>
+        <li>Aumento da mortalidade neonatal (embora com evidências limitadas).</li>
+        <li>Riscos para futuras gestações (placenta prévia e acreta).</li>
+      </ul>
+      <p className="mb-4">O parto normal favorece a respiração do bebê e tem menor custo e recuperação mais rápida. É crucial que a gestante seja informada sobre os benefícios de cada tipo de parto, optando pelo mais adequado à sua condição de saúde.</p>
+    `,
+  },
+  'parto-domiciliar': {
+    title: '5.19 O Parto Domiciliar Assistido por Parteiras Tradicionais',
+    page: '151-154',
+    fullSnippet: 'No Brasil, o parto domiciliar assistido por parteiras tradicionais está presente principalmente nas Regiões Norte e Nordeste, sobretudo nas áreas rurais, ribeirinhas, de floresta, em meio às populações quilombolas e indígenas.',
+    content: `
+      <p className="text-lg font-semibold mb-2">O parto domiciliar assistido por parteiras tradicionais é uma realidade no Brasil, especialmente em regiões rurais, quilombolas e indígenas, exigindo reconhecimento e apoio do SUS.</p>
+      <p className="mb-4">A inclusão deste tipo de parto no SUS é fundamental para a atenção integral à saúde da mulher e da criança, e para a redução da morbimortalidade materna e neonatal. A parteira tradicional adquire suas aptidões por meio de práticas e saberes transmitidos geracionalmente, atuando em contextos de isolamento e falta de acesso a serviços públicos.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">5.19.1 A Parteira Tradicional:</h3>
+      <p className="mb-4">Definida pelo Ministério da Saúde como aquela que assiste ao parto domiciliar baseada em saberes e práticas tradicionais, reconhecida pela comunidade. Sua ocupação está na Classificação Brasileira de Ocupações (CBO). É crucial que a atenção básica apoie e se articule com as parteiras, garantindo o acompanhamento pré-natal e pós-parto, fornecimento de materiais e esterilização de instrumentais.</p>
+    `,
+  },
+  'intercorrencias-clinicas': {
+    title: '6. Intercorrências Clínicas e Obstétricas Mais Frequentes',
+    page: '159-244',
+    fullSnippet: 'Caracteriza-se por vômitos contínuos e intensos que impedem a alimentação da gestante, ocasionando desidratação, oligúria, perda de peso e transtornos metabólicos, com alcalose (pela perda maior de cloro, acarretando hipocloremia, perda de potássio e alterações no metabolismo das gorduras e dos carboidratos).',
+    content: `
+      <p className="text-lg font-semibold mb-2">Este capítulo aborda as principais intercorrências clínicas e obstétricas que podem surgir durante a gestação, exigindo diagnóstico e manejo adequados.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">6.1 Hiperêmese Gravídica:</h3>
+      <p className="mb-4">Caracterizada por vômitos contínuos e intensos que levam a desidratação, perda de peso e distúrbios metabólicos. Pode ser associada a gestação múltipla, mola hidatiforme, pré-eclâmpsia. O apoio psicológico e a reorientação alimentar são importantes; em casos graves, pode ser necessária internação e antieméticos.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">6.2 Síndromes Hemorrágicas:</h3>
+      <p className="mb-4">Incluem abortamento, gravidez ectópica e mola hidatiforme na primeira metade da gestação; e placenta prévia e descolamento prematuro da placenta (DPP) na segunda metade. O exame ginecológico é crucial para o diagnóstico diferencial, evitando o toque vaginal em casos de placenta prévia.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.2.1 Abortamento:</h4>
+      <p className="mb-2">Morte ou expulsão ovular antes de 22 semanas. Pode ser ameaça de abortamento, aborto inevitável, retido ou infectado. O diagnóstico é clínico e ultrassonográfico, com encaminhamento hospitalar para curetagem em casos de aborto inevitável ou retido.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.2.2 Gravidez Ectópica:</h4>
+      <p className="mb-2">Nidação do ovo fora do útero, geralmente na trompa. Sintomas: atraso menstrual, dor pélvica, sangramento. Requer encaminhamento hospitalar para diagnóstico e tratamento.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.2.3 Doença Trofoblástica Gestacional (Mola Hidatiforme):</h4>
+      <p className="mb-2">Degeneração trofoblástica com sangramento vaginal intermitente, incompatibilidade da altura uterina com a idade gestacional e BHCG muito elevado. Necessita de confirmação ultrassonográfica e tratamento hospitalar.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.2.6 Descolamento Prematuro de Placenta (DPP):</h4>
+      <p className="mb-2">Separação da placenta antes do feto, após 20 semanas. Causa dor abdominal súbita e sangramento escuro. É uma emergência obstétrica.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.2.7 Placenta Prévia:</h4>
+      <p className="mb-2">Implantação da placenta na parte inferior do útero, causando sangramento vaginal indolor, vermelho vivo e recorrente. O diagnóstico é ultrassonográfico e requer acompanhamento em pré-natal de alto risco.</p>
+
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">6.3 Patologias do Líquido Amniótico:</h3>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.1 Oligoidrâmnio:</h4>
+      <p className="mb-2">Diminuição do volume de líquido amniótico. Associado a patologias placentárias, fetais e maternas. Diagnóstico ultrassonográfico, exige encaminhamento ao pré-natal de alto risco.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.2 Polidrâmnio:</h4>
+      <p className="mb-2">Acúmulo excessivo de líquido amniótico. Associado a diabetes, infecções congênitas e anomalias fetais. Diagnóstico ultrassonográfico, exige investigação da causa e encaminhamento ao alto risco.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.3 Rotura Prematura das Membranas Ovulares (RPMO):</h4>
+      <p className="mb-2">Rotura da bolsa antes do trabalho de parto. Aumenta risco de infecções e prematuridade. O diagnóstico é clínico (perda de líquido vaginal) e exame especular. Evitar toque vaginal. Encaminhar para maternidade/hospital.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.4 Trabalho de Parto Prematuro (TPP):</h4>
+      <p className="mb-2">Contrações uterinas rítmicas com modificações cervicais antes de 37 semanas. Exige encaminhamento hospitalar. Infecções urinárias e vaginais são fatores de risco.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.5 Gestação Prolongada:</h4>
+      <p className="mb-2">Idade gestacional entre 40 e 42 semanas. A função placentária declina, aumentando o risco fetal. Exige controle da vitalidade fetal e, se necessário, indução do parto.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.6 Crescimento Intrauterino Restrito (CIUR):</h4>
+      <p className="mb-2">Limitação do potencial de crescimento fetal. Suspeita em casos de altura uterina menor que a esperada. Diagnóstico ultrassonográfico. Requer encaminhamento ao pré-natal de alto risco.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.7 Varizes e Tromboembolismo:</h4>
+      <p className="mb-2">Varizes comuns na gestação. O tromboembolismo (oclusão de veia por trombo) é mais grave, requerendo encaminhamento urgente.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.8 Anemia:</h4>
+      <p className="mb-2">Hemoglobina abaixo de 11g/dl. Rastreamento e suplementação de ferro são essenciais. Anemia grave exige encaminhamento ao alto risco.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.9 Doença Falciforme:</h4>
+      <p className="mb-2">Doença genética que causa anemia crônica e dores. Mulheres grávidas têm maior risco de abortamento e complicações. Diagnóstico pelo teste do pezinho ou eletroforese de hemoglobina. Exige pré-natal de alto risco.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.10 Diabetes Gestacional (DMG):</h4>
+      <p className="mb-2">Alteração no metabolismo dos carboidratos que surge na gestação. Rastreamento e controle da glicemia são fundamentais para evitar complicações maternas e fetais.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.11 Síndromes Hipertensivas na Gestação:</h4>
+      <p className="mb-2">A HAS (Hipertensão Arterial Sistêmica) é a complicação mais frequente, incluindo pré-eclâmpsia e eclâmpsia. O diagnóstico precoce (com teste rápido de proteinúria) e o tratamento são cruciais para reduzir a morbimortalidade. Casos graves exigem hospitalização.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.12 Doença Hemolítica Perinatal (DHP):</h4>
+      <p className="mb-2">Hemólise fetal por incompatibilidade sanguínea materno-fetal (principalmente Rh). A prevenção é fundamental, com Coombs indireto e imunoprofilaxia.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.13 Doenças Respiratórias (Asma Brônquica):</h4>
+      <p className="mb-2">A asma pode afetar ou ser afetada pela gravidez. O controle da doença é essencial para minimizar riscos maternos e fetais. Os princípios de tratamento são os mesmos fora da gravidez, mas com atenção à segurança dos fármacos.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.16 Infecção do Trato Urinário (ITU):</h4>
+      <p className="mb-2">Comum na gestação (bacteriúria assintomática, cistite, pielonefrite). Bacteriúria assintomática exige tratamento. Pielonefrite é grave e requer hospitalização. Antibioticoterapia específica para gestantes.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.20 Estreptococo do Grupo B (SGB):</h4>
+      <p className="mb-2">Pode colonizar vagina/uretra. A infecção neonatal pode ser grave. Não há consenso sobre rastreamento universal e antibioticoterapia intraparto no Brasil.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.21 Hepatite B:</h4>
+      <p className="mb-2">Infecção hepática com risco de transmissão vertical. Rastreamento (HBsAg) no pré-natal e vacinação/imunoglobulina no recém-nascido são prioritários.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.22 HIV:</h4>
+      <p className="mb-2">Infecção por HIV com risco de transmissão vertical. O diagnóstico precoce e a terapia antirretroviral (ARV) são essenciais para reduzir a transmissão. A amamentação é contraindicada.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.23 Sífilis:</h4>
+      <p className="mb-2">Doença infecciosa sistêmica. Alta prevalência em gestantes. Diagnóstico e tratamento com penicilina são de baixo custo e alta eficácia para prevenir a sífilis congênita. Testes no início do pré-natal e no terceiro trimestre são compulsórios.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.24 Demais Doenças Sexualmente Transmissíveis (DST):</h4>
+      <p className="mb-2">Incluem úlceras genitais (sífilis, cancro mole, herpes), corrimentos (clamídia, gonorreia, vaginose bacteriana, candidíase, tricomoníase) e verrugas (HPV). A abordagem sindrômica e o tratamento dos parceiros são cruciais.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.25 Toxoplasmose:</h4>
+      <p className="mb-2">Zoonose com risco de acometimento fetal. Rastreamento e tratamento da infecção materna são importantes, com medidas de prevenção primária para gestantes suscetíveis.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.26 Tuberculose (TB) na Gravidez:</h4>
+      <p className="mb-2">Doença curável, mas ainda causa de morte. O prognóstico com tratamento adequado é o mesmo. Rastreamento em populações de risco e tratamento supervisionado são essenciais. Amamentação não contraindicada, exceto em mastite tuberculosa.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.27 Hanseníase na Gravidez:</h4>
+      <p className="mb-2">Doença crônica que afeta pele e nervos. O tratamento poliquimioterápico é recomendado durante a gestação. A doença pode se manifestar ou agravar durante a gravidez e puerpério. Exige acompanhamento e apoio da equipe.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.28 Malária na Gravidez:</h4>
+      <p className="mb-2">Doença infecciosa com risco de gravidade para a mãe e o feto. Diagnóstico (gota espessa ou testes rápidos) e tratamento imediato são cruciais, especialmente em áreas endêmicas.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.29 Parasitoses Intestinais:</h4>
+      <p className="mb-2">Helmintíases e protozooses. Podem comprometer a nutrição materna e o desenvolvimento fetal. O tratamento só é indicado em casos graves e preferencialmente após o primeiro trimestre.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.30 Epilepsia:</h4>
+      <p className="mb-2">Doença que pode ter a frequência de crises alterada na gestação. O tratamento com drogas antiepilépticas (DAE) é recomendado, com atenção aos riscos e benefícios. O acompanhamento em alto risco é indicado.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.31 Uso de Álcool e Outras Drogas na Gestação:</h4>
+      <p className="mb-2">Uso de álcool pode causar síndrome fetal pelo álcool. Fumo, maconha e cocaína/crack têm efeitos prejudiciais no feto e na gestação. É crucial a abordagem sensível da equipe de saúde para incentivar a interrupção do uso e garantir o pré-natal.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">6.3.32 Violência contra a Mulher durante a Gestação:</h4>
+      <p className="mb-2">A violência (física, sexual, psicológica) tem graves consequências para mãe e bebê. Não diminui na gravidez. O pré-natal é uma oportunidade para identificar e intervir. Inclui DSTs (com profilaxia) e infecção por HIV (com profilaxia antirretroviral).</p>
+    `,
+  },
+  'parto-iminente': {
+    title: '7. Assistência ao Parto Iminente',
+    page: '249-251',
+    fullSnippet: 'Definição: quando não é mais possível transportar a parturiente para uma maternidade devido à iminência do nascimento do bebê. A paciente encontra-se no período expulsivo ou no 2º período do trabalho de parto.',
+    content: `
+      <p className="text-lg font-semibold mb-2">A assistência ao parto iminente ocorre quando o transporte da parturiente para a maternidade não é mais possível, pois o nascimento do bebê é iminente.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Diagnóstico:</h3>
+      <p className="mb-4">Contrações fortes e frequentes (2 ou mais em 10 minutos), com "puxos" (sensação de pressão no períneo) e/ou visualização de distensão perineal ou da apresentação do bebê na vulva.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Assistência ao Segundo Período (Período Expulsivo):</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li><strong className="text-pink-600">Posicionamento da paciente:</strong> Laborie-Duncan (decúbito dorsal com mesa verticalizada) ou cócoras. Em pacientes com insuficiência cardíaca, decúbito lateral.</li>
+        <li><strong className="text-pink-600">Antissepsia e campos esterilizados:</strong> Para garantir a higiene.</li>
+        <li><strong className="text-pink-600">Episiotomia:</strong> Realizada seletivamente (em casos de sofrimento fetal, uso de fórcipe, fetos grandes, etc.), preferencialmente médio-lateral.</li>
+        <li><strong className="text-pink-600">Ausculta de BCF:</strong> A cada 5 minutos durante o período expulsivo.</li>
+        <li><strong className="text-pink-600">Controle do desprendimento da cabeça:</strong> Manobra de Ritgen para evitar deflexão súbita.</li>
+        <li><strong className="text-pink-600">Aspiração:</strong> Aspiração da boca e nariz do feto com pera de borracha, verificar circular cervical de cordão.</li>
+        <li><strong className="text-pink-600">Desprendimento dos ombros:</strong> Tração ligeira da cabeça fetal.</li>
+        <li><strong className="text-pink-600">Clampeamento do cordão:</strong> Pode ser imediato ou tardio.</li>
+        <li><strong className="text-pink-600">Profilaxia da hemorragia puerperal:</strong> Ocitocina intramuscular após desprendimento do ombro anterior.</li>
+      </ul>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Assistência ao Terceiro Período (Dequitação da Placenta):</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li><strong className="text-pink-600">Manejo ativo:</strong> Ocitócitos e tração controlada do cordão umbilical para reduzir a hemorragia puerperal.</li>
+        <li><strong className="text-pink-600">Revisão do trajeto:</strong> Verificar lacerações que possam causar sangramento.</li>
+      </ul>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Assistência ao Quarto Período (1ª Hora Após o Parto):</h3>
+      <p className="mb-4">Observar sinais vitais e sangramento. Em caso de sangramento excessivo por hipotonia uterina, realizar massagem uterina e infusão de ocitocina.</p>
+    `,
+  },
+  'assistencia-recem-nascido': {
+    title: '8. Assistência ao Recém-Nascido',
+    page: '253-254',
+    fullSnippet: 'O primeiro passo, após o nascimento, é a prevenção da perda de calor pelo RN. Para evitar tal possibilidade, coloque o RN sob fonte de calor radiante e seque toda a sua superfície corpórea. Lembre sempre de remover os campos úmidos, deixando-os longe do paciente.',
+    content: `
+      <p className="text-lg font-semibold mb-2">A assistência imediata ao recém-nascido (RN) após o parto é crucial para garantir sua vitalidade e saúde.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">Principais Cuidados:</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li><strong className="text-pink-600">Prevenção da perda de calor:</strong> Colocar o RN sob fonte de calor radiante e secar toda a sua superfície corpórea. Remover campos úmidos.</li>
+        <li><strong className="text-pink-600">Estabelecer permeabilidade das vias aéreas:</strong> Posicionar a cabeça do RN com leve extensão do pescoço. Aspirar vias aéreas (boca e depois nariz) se necessário, com cuidado para não causar apneia/bradicardia.</li>
+        <li><strong className="text-pink-600">Iniciar a respiração:</strong> Se o RN não respirar após o estímulo tátil (máximo duas vezes), iniciar ventilação com pressão positiva imediatamente.</li>
+        <li><strong className="text-pink-600">Avaliação do RN (os três sinais):</strong> Respiração, frequência cardíaca e cor.</li>
+        <li><strong className="text-pink-600">Boletim de Apgar:</strong> Usado para avaliar a resposta do RN às manobras de reanimação no 1º, 5º e, se necessário, 10º, 15º e 20º minutos de vida.</li>
+        <li><strong className="text-pink-600">Cuidados com o coto umbilical:</strong> Laquear o cordão a 2-3cm do anel umbilical, limpando com clorexidina a 0,5% ou álcool etílico a 70%. Verificar a presença de duas artérias e uma veia.</li>
+        <li><strong className="text-pink-600">Profilaxia da oftalmia e vulvovaginite gonocócica:</strong> Instilar nitrato de prata a 1% nos olhos e vagina.</li>
+        <li><strong className="text-pink-600">Profilaxia da doença hemorrágica do RN:</strong> Administrar vitamina K (1mg, IM).</li>
+        <li><strong className="text-pink-600">Verificação da permeabilidade nasal e do trato gastrintestinal:</strong> Introduzir sonda gástrica para verificar atresia de coanas ou esôfago, e permeabilidade anal.</li>
+        <li><strong className="text-pink-600">Identificação:</strong> Impressão digital da mãe e digital/plantar do RN. Pulseira com dados essenciais.</li>
+        <li><strong className="text-pink-600">Procedimentos finais:</strong> Exame físico simplificado (peso, estatura, perímetros, malformações). Classificar e examinar a placenta. Coletar amostra de sangue materno e do cordão. Encaminhar RN ao alojamento conjunto.</li>
+      </ul>
+    `,
+  },
+  'pos-parto': {
+    title: '9. O Pós-Parto',
+    page: '259-280',
+    fullSnippet: 'Da mesma forma que a gravidez, o pós-parto – também denominado puerpério – é um período especial na vida de uma mulher e merece algumas considerações específicas. No puerpério podem surgir problemas de saúde ainda relacionados com a gravidez, responsáveis por muitas sequelas e até mesmo mortes de mulheres, provocadas por hemorragias e infecções.',
+    content: `
+      <p className="text-lg font-semibold mb-2">O pós-parto, ou puerpério, é um período crucial onde podem surgir problemas de saúde relacionados à gravidez, exigindo atenção contínua para a mulher e o recém-nascido.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">9.1 Atenção no Puerpério:</h3>
+      <p className="mb-4">A "Primeira Semana de Saúde Integral" (PSSI) é uma estratégia para reduzir a mortalidade infantil, com atividades na atenção à puérpera e ao RN. A maternidade deve avisar a equipe de atenção básica sobre a alta, para que a visita domiciliar seja realizada em tempo oportuno. A mulher deve estar atenta a sinais como febre, sangramento excessivo, dor, infecção em pontos de cesárea/episiotomia. A visita domiciliar e o retorno ao serviço de saúde na primeira semana são essenciais para avaliar a saúde e orientar sobre amamentação e cuidados básicos.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">9.1.1 Ações Relacionadas à Puérpera:</h4>
+      <p className="mb-2">A anamnese verifica condições da gestação e parto, uso de medicamentos, e questões sobre aleitamento, alimentação, sono, dor, fluxo vaginal, sangramento, queixas urinárias, febre, planejamento familiar e condição psicoemocional. A avaliação clínico-ginecológica inclui sinais vitais, estado psíquico, mamas (ingurgitamento, fissuras), abdômen, períneo, genitais externos. Orientações sobre higiene, alimentação, atividade sexual (com prevenção de DST/Aids), cuidados com as mamas e RN. Prescrição de suplementos (ferro) e vacinas, se necessário. Orientação sobre planejamento familiar e anticoncepção (LAM, DIU, minipílula, injetável trimestral).</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">9.1.2 Ações Relacionadas ao Recém-Nascido:</h4>
+      <p className="mb-2">Verificar Caderneta de Saúde da Criança, registrar informações no SisPreNatal. Observar e orientar a mamada, reforçando o aleitamento materno exclusivo até os seis meses. Avaliar peso, postura, atividade, padrão respiratório, hidratação, pele, crânio, olhos, nariz, boca, pescoço, tórax, abdômen, genitália, extremidades e coluna vertebral. Realizar teste do pezinho e verificar vacinas (BCG, Hepatite B).</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">9.1.3 Consulta Puerperal (até 42 dias):</h4>
+      <p className="mb-2">Reavaliação das condições de saúde da mulher e do RN, registro de alterações, investigação da amamentação e retorno da menstruação/atividade sexual, ações educativas. Foco nos aspectos emocionais do puerpério: período de transformações psíquicas, vulnerabilidade, necessidade de adaptação, medos e ansiedades. O papel da equipe é acolher, identificar sofrimento psíquico (tristeza puerperal, depressão pós-parto, transtorno psicótico puerperal) e fornecer apoio.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">9.1.4 Depressão Puerperal (DPP) e 9.1.5 Blues Pós-Parto:</h4>
+      <p className="mb-2">A DPP é um episódio de depressão maior (início até 1 ano pós-parto). Blues pós-parto é uma alteração de humor leve e transitória (até 2 semanas após o parto). Fatores de risco para DPP incluem histórico de depressão, falta de apoio, gestação não planejada. O tratamento pode ser psicossocial ou farmacológico (com cuidado na amamentação).</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">9.1.6 Uso de Método Anticoncepcional durante o Aleitamento:</h4>
+      <p className="mb-2">A escolha é personalizada. LAM (amenorreia da lactação) é um método comportamental. Métodos não hormonais (DIU, barreira) e hormonais apenas de progesterona (minipílula, injetável trimestral) são preferíveis após 6 semanas do parto. Combinados não são recomendados.</p>
+      <h4 className="text-md font-medium mt-2 mb-1 text-pink-600">9.1.7 Dificuldades com o Aleitamento no Período Puerperal:</h4>
+      <p className="mb-2">Incluem pega incorreta do mamilo (causa dor e fissuras), mamas ingurgitadas (dor, edema, febre) e mastite (inflamação/infecção). Orientações sobre a pega correta, ordenha manual e cuidados para prevenir fissuras e ingurgitamento. Amamentação é contraindicada em poucas situações (HIV, HTLV, distúrbios graves da consciência).</p>
+    `,
+  },
+  'aspectos-legais': {
+    title: '10. Aspectos Legais e Direitos na Gestação',
+    page: '285-290',
+    fullSnippet: 'É muito importante que a equipe de atenção básica conheça e oriente a mulher sobre os aspectos legais e os direitos na gestação. Em forma de tópicos, estão listados os direitos da gestante no âmbito da atenção à saúde, do direito social, do direito trabalhista, do aborto, do direito reprodutivo e do direito do pai.',
+    content: `
+      <p className="text-lg font-semibold mb-2">É fundamental que a gestante conheça seus direitos, garantidos por lei, para assegurar uma gravidez e um puerpério saudáveis.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">10.1 Atenção à Saúde:</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li>Direito ao atendimento gratuito e de boa qualidade no SUS.</li>
+        <li>Recebimento do Cartão da Gestante na primeira consulta, com todas as informações essenciais.</li>
+        <li>Direito de ter o bebê em alojamento conjunto, amamentar e receber orientações sobre amamentação.</li>
+        <li>Orientação sobre consulta de pós-parto e controle da saúde do bebê.</li>
+        <li><strong className="text-pink-600">Vinculação à maternidade:</strong> Conhecer e ser assistida na maternidade de referência (Lei nº 11.634/2007).</li>
+        <li><strong className="text-pink-600">Direito a acompanhante:</strong> Ter acompanhante de escolha durante toda a permanência na maternidade (Lei nº 11.108/2005).</li>
+      </ul>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">10.2 Direitos Sociais:</h3>
+      <ul className="list-disc list-inside mb-4">
+        <li>Prioridade em filas e assentos em transportes coletivos.</li>
+        <li>Registro gratuito do bebê (Certidão de Nascimento) em cartório.</li>
+        <li>Direito a creche para os filhos em empresas com mais de 30 mulheres.</li>
+      </ul>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">10.3 Estabilidade da Gestante no Emprego:</h3>
+      <p className="mb-4">Garantida desde a confirmação da gravidez até 5 meses após o parto. A empregada não pode ser dispensada e tem direito a indenização em caso de demissão. Deve informar o empregador com atestado médico e laboratorial.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">10.4 Licença-Maternidade:</h3>
+      <p className="mb-4">Direito a 120 dias de licença após o parto, sem prejuízo do emprego e salários (podendo iniciar no 8º mês de gestação). Há leis estaduais/municipais que estendem para 180 dias. Inclui 2 semanas de descanso adicionais pela CLT.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">10.5 Funções Exercidas pela Gestante:</h3>
+      <p className="mb-4">Pode ser realocada para funções mais adequadas à sua saúde e do bebê, sem prejuízo de salário, com retorno à função original após a licença-maternidade, mediante atestado médico.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">10.6 Licença Médica:</h3>
+      <p className="mb-4">Direito a dispensa do trabalho para consultas e exames, com atestado médico.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">10.7 Aborto:</h3>
+      <p className="mb-4">Em caso de aborto espontâneo, direito a 2 semanas de repouso com salários e funções assegurados. Para aborto legal (risco de vida da mulher ou estupro), a mulher tem direito a atendimento especializado e interrupção segura e gratuita, sem necessidade de autorização judicial (em caso de estupro, recomenda-se BO).</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">10.8 Amamentação:</h3>
+      <p className="mb-4">Direito a dois descansos especiais de meia hora cada, durante a jornada de trabalho, para amamentação até os 6 meses (prorrogável com atestado médico). A empresa deve fornecer local apropriado.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">10.9 Atestados:</h3>
+      <p className="mb-4">Proibida a exigência de atestado de esterilidade/gravidez para admissão/permanência no emprego. O médico não deve fornecer esses atestados. Pode fornecer atestado de gravidez para a mulher romper contrato de trabalho prejudicial.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">10.10 Outros Direitos Reprodutivos:</h3>
+      <p className="mb-4">Laqueadura em mulheres com mais de 25 anos e dois filhos (pode ser feita durante cesárea em casos de saúde grave, ou após 42 dias do parto). Direito à informação sobre todos os métodos contraceptivos, incluindo contracepção de emergência.</p>
+      <h3 className="text-md font-medium mt-4 mb-2 text-pink-700">10.11 Direitos do Pai:</h3>
+      <p className="mb-4">Licença-paternidade de 5 dias após o nascimento. Direito a participar do pré-natal e acompanhar a gestante no hospital/maternidade.</p>
+    `,
+  },
+};
+
+const App = () => {
+  const [selectedTopic, setSelectedTopic] = useState('introducao');
+  const [activeTab, setActiveTab] = useState('conteudo'); // 'conteudo' or 'paginas'
+
+  const handleTopicChange = (event) => {
+    setSelectedTopic(event.target.value);
+    setActiveTab('conteudo'); // Reset to content tab when topic changes
+  };
+
+  const currentTopic = topicsData[selectedTopic];
+
+  return (
+    <div className="min-h-screen bg-pink-100 font-sans text-gray-800 flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8">
+      {/* Header Section */}
+      <header className="w-full max-w-4xl text-center mb-8">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-pink-700 mb-4 rounded-lg bg-pink-200 p-4 shadow-lg">
+          GUIA DE ATENÇÃO AO PRÉ-NATAL
+        </h1>
+        <p className="text-xl sm:text-2xl text-pink-600">
+          Navegue pelos tópicos essenciais sobre o pré-natal de baixo risco.
+        </p>
+        <div className="flex justify-center my-4">
+          <img src="https://placehold.co/400x150/F0F9FF/9A275A?text=Saúde+Materna" alt="Ilustração de saúde materna" className="rounded-lg shadow-md" />
+        </div>
+      </header>
+
+      {/* Topic Selection Dropdown */}
+      <div className="w-full max-w-2xl mb-8">
+        <label htmlFor="topic-select" className="block text-lg font-medium text-pink-800 mb-2">
+          Selecione o Tópico:
+        </label>
+        <select
+          id="topic-select"
+          onChange={handleTopicChange}
+          value={selectedTopic}
+          className="block w-full p-3 border border-pink-400 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500 bg-white text-pink-800 text-lg sm:text-xl cursor-pointer transition duration-300 ease-in-out hover:border-pink-600"
+          style={{ appearance: 'none', backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%20viewBox%3D%220%200%20292.4%20292.4%22%3E%3Cpath%20fill%3D%22%23F472B6%22%20d%3D%22M287%20197.8L159.2%2069.9c-4.7-4.7-12.3-4.7-17%200L5.4%20197.8c-4.7%204.7-4.7%2012.3%200%2017l14.2%2014.2c4.7%204.7%2012.3%204.7%2017%200l106.6-106.6c4.7-4.7%2012.3-4.7%2017%200l106.6%20106.6c4.7%204.7%2012.3%204.7%2017%200l14.2-14.2c4.7-4.7%204.7-12.3%200-17z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.7em top 50%', backgroundSize: '0.65em auto' }}
+        >
+          {Object.entries(topicsData).map(([key, topic]) => (
+            <option key={key} value={key} className="text-pink-800">
+              {topic.title}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="w-full max-w-4xl flex justify-center mb-4">
+        <button
+          className={`px-6 py-2 rounded-l-lg font-semibold text-lg transition duration-300 ease-in-out ${
+            activeTab === 'conteudo' ? 'bg-pink-500 text-white shadow-md' : 'bg-pink-200 text-pink-700 hover:bg-pink-300'
+          }`}
+          onClick={() => setActiveTab('conteudo')}
+        >
+          Conteúdo
+        </button>
+        <button
+          className={`px-6 py-2 rounded-r-lg font-semibold text-lg transition duration-300 ease-in-out ${
+            activeTab === 'paginas' ? 'bg-pink-500 text-white shadow-md' : 'bg-pink-200 text-pink-700 hover:bg-pink-300'
+          }`}
+          onClick={() => setActiveTab('paginas')}
+        >
+          Páginas do PDF
+        </button>
+      </div>
+
+      {/* Content Display Area */}
+      <main className="w-full max-w-4xl bg-white p-6 sm:p-8 rounded-lg shadow-xl border border-pink-300">
+        {currentTopic ? (
+          activeTab === 'conteudo' ? (
+            <>
+              <h2 className="text-3xl sm:text-4xl font-bold text-pink-700 mb-4 border-b-2 border-pink-400 pb-2">
+                {currentTopic.title}
+              </h2>
+              <div
+                className="text-gray-700 leading-relaxed text-base sm:text-lg"
+                dangerouslySetInnerHTML={{ __html: currentTopic.content }}
+              />
+            </>
+          ) : (
+            // Display page information when 'Páginas do PDF' tab is active
+            <>
+              <h2 className="text-3xl sm:text-4xl font-bold text-pink-700 mb-4 border-b-2 border-pink-400 pb-2">
+                Páginas do PDF - {currentTopic.title}
+              </h2>
+              <div className="text-gray-700 leading-relaxed text-base sm:text-lg">
+                <p className="mb-4">Esta informação pode ser encontrada nas páginas <strong className="text-pink-600">{currentTopic.page}</strong> do PDF original.</p>
+                {currentTopic.fullSnippet && (
+                  <p className="mb-4">Trecho relevante do PDF: "<strong className="text-pink-600">{currentTopic.fullSnippet}</strong>"</p>
+                )}
+                <p>Para consultar o conteúdo completo, volte para a aba "Conteúdo".</p>
+              </div>
+            </>
+          )
+        ) : (
+          <p className="text-center text-xl text-gray-500">Selecione um tópico para visualizar o conteúdo.</p>
+        )}
+      </main>
+
+      {/* Footer (optional) */}
+      <footer className="w-full max-w-4xl text-center mt-8 text-pink-500 text-sm">
+        <p>&copy; 2024 GUIA DE ATENÇÃO AO PRÉ-NATAL. Conteúdo baseado no documento "Cadernos de Atenção Básica, n° 32".</p>
+      </footer>
+    </div>
+  );
+};
+
+export default App;
